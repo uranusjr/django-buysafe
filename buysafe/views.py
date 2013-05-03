@@ -83,14 +83,11 @@ def start(request, template='buysafe/start.html'):
 @require_POST
 def success(request, payment_type, template='buysafe/success.html'):
     payment_type = int(payment_type)
-    print 'SUCCESS'
     form_type = PAYMENT_RECEIVE_FORMS[payment_type]
     form = form_type(BUYSAFE_STORE_PASSWORD, request.POST)
     if not form.is_valid():
-        print 'SUCCESS NOT VALID', form.errors
         return HttpResponseBadRequest()
     send_type = form.cleaned_data['send_type']
-    print 'SUCCESS SEND TYPE', send_type
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
         return HttpResponse()
     context = {
@@ -103,14 +100,11 @@ def success(request, payment_type, template='buysafe/success.html'):
 @require_POST
 def fail(request, payment_type, template='buysafe/fail.html'):
     payment_type = int(payment_type)
-    print 'FAILED'
     form_type = PAYMENT_RECEIVE_FORMS[payment_type]
     form = form_type(BUYSAFE_STORE_PASSWORD, request.POST)
     if not form.is_valid():
-        print 'FAILED NOT VALID', form.errors
         return HttpResponseBadRequest()
     send_type = form.cleaned_data['send_type']
-    print 'FAILED SEND TYPE', send_type
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
         return HttpResponse()
     context = {
@@ -123,14 +117,11 @@ def fail(request, payment_type, template='buysafe/fail.html'):
 @require_POST
 def check(request, payment_type):
     payment_type = int(payment_type)
-    print 'CHECK'
     form_type = PAYMENT_RECEIVE_FORMS[payment_type]
     form = form_type(BUYSAFE_STORE_PASSWORD, request.POST)
     if not form.is_valid():
-        print 'CHECK NOT VALID', form.errors
         return HttpResponseBadRequest()
     send_type = form.cleaned_data['send_type']
-    print 'CHECK SEND TYPE', send_type
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
         return HttpResponse('0000')
     return HttpResponseBadRequest()
