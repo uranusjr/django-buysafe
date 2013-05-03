@@ -63,7 +63,7 @@ def start(request, template='buysafe/start.html'):
         info = getattr(module, function_name)(**keyword_args)
 
     forms = []
-    for method in PaymentMethod.objects.filter(enabled=True):
+    for method in PaymentMethod.enabled.all():
         form_model = PAYMENT_SEND_FORMS[method.payment_type]
         info['store_name'] = method.store_id
         form = form_model(
