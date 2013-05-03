@@ -36,7 +36,7 @@ class PaymentMethod(models.Model):
             'alphanumeric string with length between 8 to 20.'
         )
     )
-    is_enabled = models.BooleanField(default=False, verbose_name=_('enabled'))
+    is_enabled = models.BooleanField(default=True, verbose_name=_('enabled'))
 
     enabled = PaymentMethodManager()
     objects = models.Manager()
