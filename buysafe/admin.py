@@ -12,8 +12,8 @@ class PaymentMethodForm(forms.ModelForm):
 
 
 class PaymentMethodAdmin(admin.ModelAdmin):
-    list_display = ('enabled', 'name', 'payment_type', 'store_id', 'content')
-    list_editable = ('enabled',)
+    list_display = ('is_enabled', 'name', 'payment_type', 'store_id', 'content')
+    list_editable = ('is_enabled',)
     list_display_links = ('name',)
     form = PaymentMethodForm
 
