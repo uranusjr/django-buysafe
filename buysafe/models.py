@@ -39,6 +39,7 @@ class PaymentMethod(models.Model):
     is_enabled = models.BooleanField(default=False, verbose_name=_('enabled'))
 
     enabled = PaymentMethodManager()
+    objects = models.Manager()
 
     class Meta:
         verbose_name = _('Payment method')
