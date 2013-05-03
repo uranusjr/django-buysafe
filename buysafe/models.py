@@ -48,7 +48,7 @@ class PaymentMethod(models.Model):
 
     def save(self, *args, **kwargs):
         super(PaymentMethod, self).save(*args, **kwargs)
-        if self.enabled is True:
+        if self.is_enabled:
             (PaymentMethod.objects.exclude(id=self.id)
                           .filter(payment_type=self.payment_type, enabled=True)
                           .update(enabled=False))
