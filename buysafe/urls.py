@@ -1,9 +1,9 @@
-from django.conf.urls import patterns
+from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns(
     'buysafe.views',
-    (r'^entry/(?P<order_id>\d+)/$', 'entry'),
+    url(r'^entry/(?P<order_id>\d+)/$', 'entry', name='buysafe_pay'),
     (r'^start/$', 'start'),
     (r'^success/(?P<payment_type>[01])/$', 'success'),
     (r'^fail/(?P<payment_type>[01])/$', 'fail'),
