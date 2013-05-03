@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 class PaymentMethodManager(models.Manager):
     def get_query_set(self):
         qs = super(PaymentMethodManager, self).get_query_set()
-        return qs.filter(enabled=True)
+        return qs.filter(is_enabled=True)
 
 
 class PaymentMethod(models.Model):
