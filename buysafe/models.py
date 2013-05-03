@@ -50,8 +50,9 @@ class PaymentMethod(models.Model):
         super(PaymentMethod, self).save(*args, **kwargs)
         if self.is_enabled:
             (PaymentMethod.objects.exclude(id=self.id)
-                          .filter(payment_type=self.payment_type, enabled=True)
-                          .update(enabled=False))
+                          .filter(payment_type=self.payment_type,
+                                  is_enabled=True)
+                          .update(is_enabled=False))
 
     def __unicode__(self):
         return self.name
