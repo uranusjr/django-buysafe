@@ -57,7 +57,7 @@ def get_payment_form(payment_type, querydict):
     form_type = PAYMENT_RECEIVE_FORMS[payment_type]
     for method in methods:
         password = method.password
-        form = form_type(password, request.POST)
+        form = form_type(password, querydict)
         if form.is_valid():
             break
         else:
