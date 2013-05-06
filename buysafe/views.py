@@ -7,12 +7,10 @@ from django.shortcuts import render
 from buysafe.models import PaymentMethod
 from buysafe.forms import SunTechReceiveForm, BuySafeSendForm, WebATMSendForm
 from buysafe.utils import (
-    call_handler, call_handler_and_return, default_order_info_handler,
-    get_payment_form
+    call_handler, call_handler_and_render, get_payment_form,
+    default_order_info_handler, make_response_handler
 )
 
-
-BUYSAFE_STORE_PASSWORD = 'yourkey2013'
 
 PAYMENT_SEND_FORMS = {
     PaymentMethod.TYPE_BUYSAFE: BuySafeSendForm,
@@ -30,10 +28,12 @@ def start(request, template='buysafe/start.html'):
     for k in request.POST:
         keyword_args[k] = request.POST[k]
 
+    context = {}
+
     info = call_handler(
         'BUYSAFE_FORM_VALUES_GENERATOR',
         default_order_info_handler,
-        **keyword_args
+        request=request, context=context, **keyword_args
     )
 
     forms = []
@@ -48,11 +48,10 @@ def start(request, template='buysafe/start.html'):
         form.submit_button_title = method.name
         forms.append(form)
 
-    context = {
-        'forms': forms
-    }
-    return call_handler_and_return(
-        'BUYSAFE_START_HANDLER', render(request, template, context),
+    context['forms'] = forms
+    return call_handler_and_render(
+        'BUYSAFE_START_HANDLER', None,
+        request=request, template=template, context=context,
         forms=forms, payment_methods=payment_methods
     )
 
@@ -60,69 +59,77 @@ def start(request, template='buysafe/start.html'):
 @csrf_exempt
 @require_POST
 def success(request, payment_type, template='buysafe/success.html'):
+    context = {}
     payment_type = int(payment_type)
     form = get_payment_form(payment_type, request.POST)
     if form is None:
-        return call_handler_and_return(
-            'BUYSAFE_SUCCESS_INVALID_HANDLER', HttpResponseBadRequest(),
-            form=form
+        return call_handler_and_render(
+            'BUYSAFE_SUCCESS_INVALID_HANDLER',
+            make_response_handler(HttpResponseBadRequest),
+            request=request, context=context, form=form
         )
     send_type = form.cleaned_data['send_type']
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
-        return call_handler_and_return(
-            'BUYSAFE_SUCCESS_BACKGROUND_HANDLER', HttpResponse(),
-            form=form, cleaned_data=form.cleaned_data
+        return call_handler_and_render(
+            'BUYSAFE_SUCCESS_BACKGROUND_HANDLER',
+            make_response_handler(HttpResponse),
+            request=request, context=context, form=form
         )
-    context = {
-        'data': form.cleaned_data
-    }
-    return call_handler_and_return(
-        'BUYSAFE_SUCCESS_RENDER_HANDLER', render(request, template, context),
-        form=form, cleaned_data=form.cleaned_data
+    context['data'] = form.cleaned_data
+    return call_handler_and_render(
+        'BUYSAFE_SUCCESS_RENDER_HANDLER', None,
+        request=request, template=template, context=context, form=form
     )
 
 
 @csrf_exempt
 @require_POST
 def fail(request, payment_type, template='buysafe/fail.html'):
+    context = {}
     payment_type = int(payment_type)
     form = get_payment_form(payment_type, request.POST)
     if form is None:
-        return call_handler_and_return(
-            'BUYSAFE_FAIL_INVALID_HANDLER', HttpResponseBadRequest(), form=form
+        return call_handler_and_render(
+            'BUYSAFE_FAIL_INVALID_HANDLER',
+            make_response_handler(HttpResponseBadRequest),
+            request=request, context=context, form=form
         )
     send_type = form.cleaned_data['send_type']
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
-        return call_handler_and_return(
-            'BUYSAFE_FAIL_BACKGROUND_HANDLER', HttpResponse(),
-            form=form, cleaned_data=form.cleaned_data
+        return call_handler_and_render(
+            'BUYSAFE_FAIL_BACKGROUND_HANDLER',
+            make_response_handler(HttpResponse),
+            request=request, context=context, form=form
         )
-    context = {
-        'data': form.cleaned_data
-    }
-    return call_handler_and_return(
-        'BUYSAFE_FAIL_RENDER_HANDLER', render(request, template, context),
-        form=form, cleaned_data=form.cleaned_data
+    context['data'] = form.cleaned_data
+    return call_handler_and_render(
+        'BUYSAFE_FAIL_RENDER_HANDLER', None,
+        request=request, template=template, context=context, form=form
     )
 
 
 @csrf_exempt
 @require_POST
 def check(request, payment_type):
+    context = {}
     payment_type = int(payment_type)
     form = get_payment_form(payment_type, request.POST)
     if form is None:
-        return call_handler_and_return(
-            'BUYSAFE_CHECK_INVALID_HANDLER', HttpResponseBadRequest(),
-            form=form
+        return call_handler_and_render(
+            'BUYSAFE_CHECK_INVALID_HANDLER',
+            make_response_handler(HttpResponseBadRequest),
+            request=request, context=context, form=form
         )
     send_type = form.cleaned_data['send_type']
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
-        return call_handler_and_return(
-            'BUYSAFE_CHECK_HANDLER', HttpResponse('0000'),
-            form=form, cleaned_data=form.cleaned_data
+        return call_handler_and_render(
+            'BUYSAFE_CHECK_HANDLER',
+            make_response_handler(HttpResponse, '0000'),
+            request=request, context=context, form=form
         )
         return HttpResponse('0000')
-    return call_handler_and_return(
-        'BUYSAFE_CHECK_INVALID_HANDLER', HttpResponseBadRequest(), form=form
+    return call_handler_and_render(
+        'BUYSAFE_CHECK_INVALID_HANDLER',
+        make_response_handler(HttpResponseBadRequest),
+        request=request, context=context, form=form
     )
