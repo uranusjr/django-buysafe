@@ -68,6 +68,7 @@ def success(request, payment_type, template='buysafe/success.html'):
             make_response_handler(HttpResponseBadRequest),
             request=request, context=context, form=form
         )
+    context['data'] = form.cleaned_data
     send_type = form.cleaned_data['send_type']
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
         return call_handler_and_render(
@@ -75,7 +76,6 @@ def success(request, payment_type, template='buysafe/success.html'):
             make_response_handler(HttpResponse),
             request=request, context=context, form=form
         )
-    context['data'] = form.cleaned_data
     return call_handler_and_render(
         'BUYSAFE_SUCCESS_RENDER_HANDLER', None,
         request=request, template=template, context=context, form=form
@@ -94,6 +94,7 @@ def fail(request, payment_type, template='buysafe/fail.html'):
             make_response_handler(HttpResponseBadRequest),
             request=request, context=context, form=form
         )
+    context['data'] = form.cleaned_data
     send_type = form.cleaned_data['send_type']
     if send_type == SunTechReceiveForm.SEND_TYPE.BACKGROUND:
         return call_handler_and_render(
@@ -101,7 +102,6 @@ def fail(request, payment_type, template='buysafe/fail.html'):
             make_response_handler(HttpResponse),
             request=request, context=context, form=form
         )
-    context['data'] = form.cleaned_data
     return call_handler_and_render(
         'BUYSAFE_FAIL_RENDER_HANDLER', None,
         request=request, template=template, context=context, form=form
