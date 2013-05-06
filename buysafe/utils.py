@@ -62,11 +62,12 @@ def call_handler(name, default_handler, **kwargs):
 
 def call_handler_and_render(name, default_handler, **kwargs):
     result = call_handler(name, default_handler, **kwargs)
-    if result is None \
-            and getattr(default_handler, '_is_response_handler', False):
-        return default_handler(**kwargs)
     if isinstance(result, HttpResponse):
         return result
+    elif isinstance(result, dict):
+        kwargs['context'] = result
+    if getattr(default_handler, '_is_response_handler', False):
+        return default_handler(**kwargs)
     return render(kwargs['request'], kwargs['template'], kwargs['context'])
 
 
