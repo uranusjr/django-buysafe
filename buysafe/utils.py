@@ -62,3 +62,4 @@ def get_payment_form(payment_type, querydict):
             break
         else:
             form = None
+    return form
