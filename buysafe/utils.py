@@ -34,6 +34,7 @@ def make_response_handler(response_type, content=None):
     else:
         def f(**kwargs):
             return response_type()
+    f._is_response_handler = True
     return f
 
 
@@ -61,6 +62,8 @@ def call_handler(name, default_handler, **kwargs):
 
 def call_handler_and_render(name, default_handler, **kwargs):
     result = call_handler(name, default_handler, **kwargs)
+    if result is None and default_handler._is_response_handler:
+        return default_handler(**kwargs)
     if isinstance(result, HttpResponse):
         return result
     return render(kwargs['request'], kwargs['template'], kwargs['context'])
