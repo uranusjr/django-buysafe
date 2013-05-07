@@ -13,6 +13,14 @@ PAYMENT_RECEIVE_FORMS = {
 }
 
 
+def strip_non_number(text):
+    result = ''
+    for char in text:
+        if char.isdigit():
+            result += char
+    return result
+
+
 def default_order_info_handler(request, context, **kwargs):
     order_id = kwargs['order_id']
     Order = get_model('shop', 'Order')
@@ -21,8 +29,8 @@ def default_order_info_handler(request, context, **kwargs):
         'price': order.total,
         'order_info': unicode(order),
         'order_id': order.id,
-        'name': order.billing_detail_first_name,
-        'phone': order.billing_detail_phone,
+        'name': order.billing_name(),
+        'phone': strip_non_number(order.billing_detail_phone),
         'email': order.billing_detail_email
     }
 
