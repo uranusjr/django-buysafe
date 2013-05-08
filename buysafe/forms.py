@@ -1,37 +1,19 @@
 import hashlib
-import re
 from copy import deepcopy
 from django import forms
 from django.forms import widgets
 from django.utils.http import urlunquote
 from buysafe.exceptions import ChecksumError
+from buysafe.fields import NumberStringField, SunTechChecksumField
+from buysafe.widgets import IntegerTextInput
 
 
 ###########
 # Gadgets #
 ###########
 
-def sha1_hex_upper(*args):
+def _sha1_hex_upper(*args):
     return hashlib.sha1(''.join([str(v) for v in args])).hexdigest().upper()
-
-
-class NumberStringField(forms.CharField):
-    def validate(self, value):
-        super(NumberStringField, self).validate(value)
-        if re.match(r'^\d*$', value) is None:
-            raise forms.ValidationError(
-                'This field should only consist numbers'
-            )
-
-
-class SunTechChecksumField(forms.CharField):
-    def validate(self, value):
-        super(SunTechChecksumField, self).validate(value)
-        if re.match(r'^[0-9A-F]{40}$', value) is None:
-            raise forms.ValidationError(
-                'Checksum should be of length 40, and consists only numbers '
-                'and/or capital alphabets from A through F.'
-            )
 
 
 #################
@@ -65,7 +47,7 @@ class SunTechSendForm(SunTechForm):
     to be hidden. This class is abstract in concept and should be subclassed.
     """
     store_name = forms.CharField()
-    price = forms.IntegerField()
+    price = forms.IntegerField(widget=IntegerTextInput())
     order_id = forms.IntegerField()
     order_info = forms.CharField(required=False)
     name = forms.CharField()
@@ -99,7 +81,7 @@ class SunTechSendForm(SunTechForm):
         to generate and return a checksum from `self['field_name'].value()` and
         `self.store_password`. This is called by `fill_checksum`.
         """
-        return sha1_hex_upper(
+        return _sha1_hex_upper(
             self['store_name'].value(),
             self.store_password,
             int(self['price'].value())
@@ -146,7 +128,7 @@ class SunTechReceiveForm(SunTechForm):
         WEBPAGE = 2
 
     def validate_checksum(self, field_name='checksum'):
-        reference = sha1_hex_upper(
+        reference = _sha1_hex_upper(
             self.cleaned_data['store_name'], self.store_password,
             self.cleaned_data['sun_id'], self.cleaned_data['price'],
             self.cleaned_data['return_code']
