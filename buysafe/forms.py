@@ -5,7 +5,7 @@ from django.forms import widgets
 from django.utils.http import urlunquote
 from buysafe.exceptions import ChecksumError
 from buysafe.fields import NumberStringField, SunTechChecksumField
-from buysafe.widgets import IntegerTextInput
+from buysafe.widgets import HiddenIntegerInput
 
 
 ###########
@@ -47,7 +47,7 @@ class SunTechSendForm(SunTechForm):
     to be hidden. This class is abstract in concept and should be subclassed.
     """
     store_name = forms.CharField()
-    price = forms.IntegerField(widget=IntegerTextInput())
+    price = forms.IntegerField()
     order_id = forms.IntegerField()
     order_info = forms.CharField(required=False)
     name = forms.CharField()
@@ -73,7 +73,11 @@ class SunTechSendForm(SunTechForm):
     def __init__(self, *args, **kwargs):
         super(SunTechSendForm, self).__init__(*args, **kwargs)
         for key in self.fields:
-            self.fields[key].widget = widgets.HiddenInput()
+            field = self.fields[key]
+            if isinstance(field, forms.IntegerField):
+                field.widget = HiddenIntegerInput()
+            else:
+                field.widget = widgets.HiddenInput()
 
     def get_checksum(self):
         """
