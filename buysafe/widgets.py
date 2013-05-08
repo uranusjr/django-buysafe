@@ -7,7 +7,7 @@ class NumberTextInput(widgets.TextInput):
     """
     def render(self, name, value, attrs=None):
         trimmed = ''
-        for char in value:
+        for char in unicode(value):
             if char.isdigit():
                 trimmed += char
         return super(NumberTextInput, self).render(name, trimmed, attrs)
@@ -18,10 +18,4 @@ class HiddenIntegerInput(widgets.HiddenInput):
     A HiddenInput that ensures that the value is an integer.
     """
     def render(self, name, value, attrs=None):
-        trimmed = ''
-        for char in value:
-            if char.isdigit():
-                trimmed += char
-            elif char == '.':
-                break
-        return super(HiddenIntegerInput, self).render(name, trimmed, attrs)
+        return super(HiddenIntegerInput, self).render(name, int(value), attrs)
