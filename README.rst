@@ -31,4 +31,8 @@ Quick start
 
 4. Go to your admin and add some payment methods.
 
-5. Profit!
+5. To pay for an order, POST a form to `buysafe_start` with the values to pass
+   to the product info handler. The default handler needs an `order_id` field.
+   This brings up a view to initiate the payment process.
+
+6. Profit!
