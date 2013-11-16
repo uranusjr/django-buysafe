@@ -1,1 +1,5 @@
 *.pyc
+__pycache__/
+/django_buysafe.egg-info/
+/build/
+/dist/
